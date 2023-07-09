@@ -8,4 +8,4 @@ The first part of the day we spend learing the various PowerShell Remoting techi
 
 The last part of the day we will learn various techniques to parse windows logs, both evtx and plain text logs.  We will connect to our lab environment and practice what we learned.  We will use PowerShell remoting to connect to the lab environment, parse some logs and pull back the results.  This portion of the work shop comes from my original Defensive PowerShell workshop.
 
-## 
+## PowerShell Remoting  
