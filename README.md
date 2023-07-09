@@ -9,3 +9,8 @@ The first part of the day we spend learing the various PowerShell Remoting techi
 The last part of the day we will learn various techniques to parse windows logs, both evtx and plain text logs.  We will connect to our lab environment and practice what we learned.  We will use PowerShell remoting to connect to the lab environment, parse some logs and pull back the results.  This portion of the work shop comes from my original Defensive PowerShell workshop.
 
 ## PowerShell Remoting  
+
+* [Testing for WinRM](https://github.com/P0w3rChi3f/Defensive-PowerShell-BiH/blob/main/Scripts/2-PowerShell-Remoting.ps1#L2)  
+* [Using the ComputerName Parameter](https://github.com/P0w3rChi3f/Defensive-PowerShell-BiH/blob/main/Scripts/2-PowerShell-Remoting.ps1#L36)  
+* [One to One Connection using Enter-PSSession](https://github.com/P0w3rChi3f/Defensive-PowerShell-BiH/blob/main/Scripts/2-PowerShell-Remoting.ps1#L43)  
+* [One to Many Connection using Invoke]
