@@ -13,4 +13,6 @@ The last part of the day we will learn various techniques to parse windows logs,
 * [Testing for WinRM](https://github.com/P0w3rChi3f/Defensive-PowerShell-BiH/blob/main/Scripts/2-PowerShell-Remoting.ps1#L2)  
 * [Using the ComputerName Parameter](https://github.com/P0w3rChi3f/Defensive-PowerShell-BiH/blob/main/Scripts/2-PowerShell-Remoting.ps1#L36)  
 * [One to One Connection using Enter-PSSession](https://github.com/P0w3rChi3f/Defensive-PowerShell-BiH/blob/main/Scripts/2-PowerShell-Remoting.ps1#L43)  
-* [One to Many Connection using Invoke]
+* [Working with sessions and variables](https://github.com/P0w3rChi3f/Defensive-PowerShell-BiH/blob/main/Scripts/2-PowerShell-Remoting.ps1#L50)  
+* [One to Many Connection using Invoke](https://github.com/P0w3rChi3f/Defensive-PowerShell-BiH/blob/main/Scripts/2-PowerShell-Remoting.ps1#L62)  
+* [Importing tools from another machine using Implicit Remoting](https://github.com/P0w3rChi3f/Defensive-PowerShell-BiH/blob/main/Scripts/2-PowerShell-Remoting.ps1#L75)  
