@@ -46,6 +46,9 @@ enter-pssession 192.168.1.21 -Authentication Default
 enter-pssession 192.168.1.21 -Credential $Creds -Authentication Default
 Enter-PSSession $connectionResults[0] -Credential $Creds -Authentication Default
 
+###########################################################################
+# Sessions
+###########################################################################
 New-PSSession -ComputerName 192.168.1.21 -Credential $Creds -Authentication Default
 $connectionResults | New-PSSession -Credential $Creds -Authentication Default
 Get-PSSession | ForEach-Object {Disconnect-PSSession -Id $_.id}
