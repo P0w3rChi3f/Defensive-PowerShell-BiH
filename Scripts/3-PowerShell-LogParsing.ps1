@@ -51,3 +51,32 @@ Get-WinEvent -FilterHashTable @{logname="Security"; ID=4648} | Select-Object -Ex
 $connectionResults | ForEach-Object {Get-WinEvent -computerName $_ -Credential $creds -FilterHashTable @{logname="Security"; ID=4648} | Select-Object -ExpandProperty Message}
 
 Invoke-Command -Session $sessions -Command {Get-WinEvent -FilterHashTable @{logname="Security"; ID=4648} | Select-Object -ExpandProperty Message}
+
+###########################################################################
+# Log Parsing : Filter XML
+# https://devblogs.microsoft.com/powershell/using-get-winevent-filterxml-to-process-windows-events/
+# https://adamtheautomator.com/get-winevent/
+###########################################################################
+
+$query = @'
+<QueryList>
+    <Query Id="0" Path=".\file\evtx\Merge.evtx">
+        <Select Path="security">
+            *[System[(EventID=4624)]] and
+            *[EventData[Data[@Name='LogonType'] and (Data !='2')]]
+        </Select>
+    </Query>
+</QueryList>
+'@
+(get-winevent -FilterXml $query | Select-Object -ExpandProperty Message).split("`n") | select-string -Pattern "Logon Type:" | Group-Object | Sort-Object Count
+
+
+###########################################################################
+# Log Parsing : Filter Xpath
+# https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.diagnostics/get-winevent?view=powershell-7.3
+###########################################################################
+$xpath = "*[System[(EventID=4624)]] and *[EventData[Data[@Name='LogonType'] and (Data='3')]]"
+Get-WinEvent -path .\files\evtx\Merge.evtx -FilterXPath $xpath
+
+$notxpath = "*[System[(EventID=4624)]] and *[EventData[Data[@Name='LogonType'] and (Data!='3')]]"
+Get-WinEvent -path .\files\evtx\Merge.evtx -FilterXPath $notxpath | Measure-Object | select-object Count
