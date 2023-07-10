@@ -35,7 +35,7 @@ ForEach ($item in $hostlist) {
 ###########################################################################
 # ComputerName Parameter
 ###########################################################################
-code .\DemoScripts\Restart-Computer.ps1
+code .\DemoScripts\Restart-Server.ps1
 
 Get-WinEvent -ComputerName 192.168.1.21 -LogName Security -Credential $creds | Where-Object {$_.id -eq 4688}
 
