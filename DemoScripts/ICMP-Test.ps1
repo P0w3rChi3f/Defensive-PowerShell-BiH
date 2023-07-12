@@ -5,7 +5,7 @@ This is an alternative way to the Test-Connection cmdlet.  I have a static list 
 
 # $IPList = read-host "Please enter the file path of the host list"
 
-$IPList = 9..25 | ForEach-Object {"192.168.1.$_"}
+$IPList = 9..25 | ForEach-Object {"172.29.150.$_"}
 
 $ReplyResults = @()
 

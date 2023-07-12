@@ -4,17 +4,20 @@
 
 # Start by scanning your targets to see if PowerShell Remoting is enabled.
 
-9..25 | ForEach-Object {test-connection -count 1 192.168.1.$_}
+9..25 | ForEach-Object {test-connection -count 1 172.29.160.$_}
+9..25 | ForEach-Object {test-connection -count 1 172.29.150.$_}
+9..25 | ForEach-Object {test-connection -count 1 172.29.189.$_}
+9..25 | ForEach-Object {test-connection -count 1 172.29.190.$_}
 
 #show ICMP example
 code .\DemoScripts\ICMP-Test.ps1       
 
 # Test WinRM Connectivity
- 9..25 | ForEach-Object {Test-WSMan -ComputerName "192.168.1.$_" -Credential $creds -Authentication Default -ErrorAction Ignore}
+$creds = Get-Credential acme\administrator
+ 9..25 | ForEach-Object {Test-WSMan -ComputerName "172.29.150.$_" -Credential $creds -Authentication Default -ErrorAction Ignore}
 
 # Test WinRM Connectivity and keep the results
-$creds = Get-Credential vagrant
-$hostlist = 9..25 | ForEach-Object {"192.168.1.$_"} 
+$hostlist = 9..25 | ForEach-Object {"172.29.190.$_"} 
 $connectionResults = @()
 
 ForEach ($item in $hostlist) {
@@ -37,38 +40,40 @@ ForEach ($item in $hostlist) {
 ###########################################################################
 code .\DemoScripts\Restart-Server.ps1
 
-Get-WinEvent -ComputerName 192.168.1.21 -LogName Security -Credential $creds | Where-Object {$_.id -eq 4688}
+Get-WinEvent -ComputerName 172.29.150.11 -LogName Security -Credential $creds | Where-Object {$_.id -eq 4674}
 
 ###########################################################################
 # Enter-PSSession
 ###########################################################################
-enter-pssession 192.168.1.21 -Authentication Default
-enter-pssession 192.168.1.21 -Credential $Creds -Authentication Default
-Enter-PSSession $connectionResults[0] -Credential $Creds -Authentication Default
+enter-pssession 172.29.150.11 -Authentication Default
+enter-pssession 172.29.150.11 -Credential $Creds -Authentication Default
+
 
 ###########################################################################
 # Sessions
 ###########################################################################
-New-PSSession -ComputerName 192.168.1.21 -Credential $Creds -Authentication Default
-$connectionResults | New-PSSession -Credential $Creds -Authentication Default
-Get-PSSession | ForEach-Object {Disconnect-PSSession -Id $_.id}
-Get-PSSession | ForEach-Object {Connect-PSSession -ComputerName $_.ComputerName -Credential $Creds -Authentication Default}
-Get-PSSession | forEach-Object {Remove-PSSession -Id $_.id}
+New-PSSession -ComputerName 172.29.150.11 -Credential $Creds -Authentication Default
+$session =  $connectionResults | New-PSSession -Credential $creds -Authentication Default
 
-$session = New-PSSession 192.168.1.21 -Credential $Creds -Authentication Default
+$connectionResults | New-PSSession -Credential $Creds -Authentication Default
+$connectionResults | remove-PSSession
+Enter-PSSession $connectionResults[5] -Credential $Creds -Authentication Default
+Get-PSSession | ForEach-Object {Disconnect-PSSession -Id $_.id}
+Get-PSSession | ForEach-Object {remove-PSSession -ComputerName $_.ComputerName -Credential $Creds -Authentication Default}
+Get-PSSession | forEach-Object {Remove-PSSession -Id $_.id}
 $sessions = $connectionResults | New-PSSession -Credential $Creds -Authentication Default
 
 ###########################################################################
 # Invoke-Command
 ###########################################################################
-Invoke-Command -computerName 192.168.1.21 -Credential $Creds -Authentication Default -ScriptBlock {Get-Process}
-Invoke-Command -Session $sessions -ScriptBlock {Get-Process} | Select-Object ProcessName, PSComputerName
-Invoke-Command -Session $sessions -ScriptBlock {Get-Process} | Select-Object ProcessName, PSComputerName | group ProcessName | Sort-Object count
+Invoke-Command -computerName 172.29.150.11 -Credential $Creds -Authentication Default -ScriptBlock {Get-Process}
+Invoke-Command -Session $session -ScriptBlock {Get-Process} | Select-Object ProcessName, PSComputerName
+Invoke-Command -Session $session -ScriptBlock {Get-Process} | Select-Object ProcessName, PSComputerName | Group-Object ProcessName | Sort-Object count
 
-Invoke-Command -Session $sessions -ScriptBlock {Get-Process -name LockApp -IncludeUserName} -ErrorAction SilentlyContinue | Select-Object ProcessName, PSComputerName, UserName, Commandline
+Invoke-Command -Session $session -ScriptBlock {Get-CimInstance Win32_Process | Where-Object {$_.name -like "*lockapp*"}} -ErrorAction SilentlyContinue | Select-Object ProcessName, PSComputerName, UserName, Commandline
 Invoke-Command -Session $sessions -ScriptBlock {Get-Process -name LockApp -IncludeUserName | Select-Object ProcessName, PSComputerName, UserName, Commandline} -ErrorAction SilentlyContinue 
 
-Invoke-Command -Session $sessions -command { Get-EventLog Security | Where-Object {$_.eventID -eq 4688}}
+Invoke-Command -Session $session -command { Get-EventLog Security | Where-Object {$_.eventID -eq 4688}}
 
 
 ###########################################################################
@@ -78,3 +83,8 @@ Invoke-Command -Session $sessions -command { Get-EventLog Security | Where-Objec
 $ADsession = New-PSSession -ComputerName 192.168.1.10 -Credential $creds -Authentication Default
 Invoke-Command -Session $ADsession -Command {Import-Module ActiveDirectory} 
 Import-PSSession -Session $ADsession -Module ActiveDirectory -Prefix PWC
+
+
+
+
+Invoke-Command -ComputerName {Get-WinEvent -LogName "Microsoft-Windows-Sysmon/Operational" -Oldest}
